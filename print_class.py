@@ -33,9 +33,3 @@ def print_func_time(func):
       )
       return result
     return wrapper
-
-
-def sleeptime():
-    sleep(2)
-
-sleeptime()
