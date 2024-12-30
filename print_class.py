@@ -1,5 +1,8 @@
-from time import time, sleep
+"""print_class.py"""
+
+from time import time
 from functools import wraps
+
 
 def print_func_time(func):
     """
@@ -25,11 +28,11 @@ def print_func_time(func):
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
-      start_time = time()
-      result = func(*args, **kwargs)
-      end_time = time()
-      print(
-        f"Function {func.__name__} took {end_time - start_time} seconds to execute"
-      )
-      return result
+        start_time = time()
+        result = func(*args, **kwargs)
+        end_time = time()
+        print(
+          f"Function {func.__name__} took {end_time - start_time}s to execute"
+        )
+        return result
     return wrapper
