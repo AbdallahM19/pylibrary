@@ -26,7 +26,6 @@ def print_func_time(func):
         result = my_function()
         print(f"Function executed in {result} seconds")
     """
-    @wraps(func)
     def wrapper(*args, **kwargs):
         start_time = time()
         result = func(*args, **kwargs)
@@ -36,3 +35,51 @@ def print_func_time(func):
         )
         return result
     return wrapper
+
+
+class PrintHelper():
+    """A class that provides a decorator to print the execution time of a function."""
+    def __init__(
+        self,
+        show_args: bool = False,
+        show_kwargs: bool = False,
+        show_time: bool = False,
+        show_return: bool = False,
+    ):
+        """
+        Args:
+        - show_args: Whether to print the function arguments.
+        - show_kwargs: Whether to print the function keyword arguments.
+        - show_time: Whether to print the execution time of the function.
+        - show_return: Whether to print the return value of the function.
+        """
+        self.show_args = show_args
+        self.show_kwargs = show_kwargs
+        self.show_time = show_time
+        self.show_return = show_return
+
+    def __call__(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            pass
+        return wrapper
+
+    @staticmethod
+    def print_all_info(func):
+        """
+        Prints the function name, arguments, keyword arguments, execution time, and return value.
+        """
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            start_time = time()
+            result = func(*args, **kwargs)
+            end_time = time()
+            print(
+                f"Function {func.__name__}\n\
+                    Time: {end_time - start_time}s\n\
+                    Arguments: {args}\n\
+                    Keyword Arguments: {kwargs}\n\
+                    Return Value: {result}"
+            )
+            return result
+        return wrapper
