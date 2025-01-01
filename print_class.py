@@ -58,7 +58,7 @@ def print_func_time(func):
     return wrapper
 
 
-class PrintHelper():
+class PrintFuncInfo():
     """A class that provides a decorator to print the execution time of a function."""
     def __init__(
         self,
