@@ -4,6 +4,27 @@ from time import time
 from functools import wraps
 
 
+# create two func print each args and kwargs
+def print_args(*args) -> None:
+    """A decorator that prints the function arguments"""
+    print("Arguments:")
+    for arg in args:
+        print(f"- {arg}")
+
+def print_kwargs(**kwargs) -> None:
+    """A decorator that prints the function keyword arguments"""
+    print("Keyword Arguments:")
+    for key, value in kwargs.items():
+        print(f"- {key}: {value}")
+
+# create func print each var in list
+def print_list(lst) -> None:
+    """A decorator that prints each variable in a list"""
+    print("List:")
+    for var in lst:
+        print(f"- {var}")
+
+
 def print_func_time(func):
     """
     Decorator:
