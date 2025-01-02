@@ -104,3 +104,9 @@ class PrintFuncInfo():
             )
             return result
         return wrapper
+
+    @staticmethod
+    def print_each_args_and_kwargs(*args, **kwargs) -> None:
+        """Prints each argument and keyword argument"""
+        print_args(*args)
+        print_kwargs(**kwargs)
