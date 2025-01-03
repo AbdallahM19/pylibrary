@@ -30,35 +30,14 @@ def print_list(lst) -> None:
             print(f"- {var}")
 
 
-def print_func_time(func):
-    """
-    Decorator:
-    - Prints the time taken by the function to execute
-    - Return the elapsed time
-
-    Args:
-        func: The function to be decorated.
-
-    Returns:
-        A wrapper function that measures and prints the execution time of the original function,
-        then returns the elapsed time.
-
-    Example:
-        @print_func_time
-        def my_function():
-            # Function code here
-            pass
-
-        result = my_function()
-        print(f"Function executed in {result} seconds")
-    """
+def print_func_time(func: Callable) -> Callable:
+    """Decorator to measure and print the execution time of a function."""
+    @wraps(func)
     def wrapper(*args, **kwargs):
         start_time = time()
         result = func(*args, **kwargs)
-        end_time = time()
-        print(
-          f"Function {func.__name__} took {end_time - start_time}s to execute"
-        )
+        elapsed_time = time() - start_time
+        print(f"Function {func.__name__} took {elapsed_time:.4f}s to execute")
         return result
     return wrapper
 
@@ -84,25 +63,54 @@ class PrintFuncInfo():
         self.show_time = show_time
         self.show_return = show_return
 
-    def __call__(self, func):
+    def __call__(self, func: Callable) -> Callable:
+        """A decorator that prints the execution time of a function"""
         @wraps(func)
         def wrapper(*args, **kwargs):
-            pass
+            async def async_inner():
+                start_time = time()
+                result = await func(*args, **kwargs)
+                end_time = time()
+                self._print_info(func, args, kwargs, result, end_time - start_time)
+                return result
+
+            def sync_inner():
+                start_time = time()
+                result = func(*args, **kwargs)
+                end_time = time()
+                self._print_info(func, args, kwargs, result, end_time - start_time)
+                return result
+
+            if asyncio.iscoroutinefunction(func):
+                return async_inner()
+            return sync_inner()
+
         return wrapper
 
+    def _print_info(self, func, args, kwargs, result, elapsed_time) -> None:
+        """Helper method to print function information."""
+        print(f"Function {func.__name__}")
+
+        if self.show_args:
+            print_args(*args)
+        if self.show_kwargs:
+            print_kwargs(**kwargs)
+        if self.show_time:
+            print(f"Time: {elapsed_time:.4f}s")
+        if self.show_return:
+            print(f"Return Value: {result}")
+
     @staticmethod
-    def print_all_info(func):
-        """
-        Prints the function name, arguments, keyword arguments, execution time, and return value.
-        """
+    def print_all_info(func: Callable) -> Callable:
+        """Decorator to print all function details."""
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        async def wrapper(*args, **kwargs):
             start_time = time()
-            result = func(*args, **kwargs)
-            end_time = time()
+            result = await func(*args, **kwargs)
+            elapsed_time = time() - start_time
             print(
                 f"Function {func.__name__}\n\
-                    Time: {end_time - start_time}s\n\
+                    Time: {elapsed_time:.4f}s\n\
                     Arguments: {args}\n\
                     Keyword Arguments: {kwargs}\n\
                     Return Value: {result}"
