@@ -30,6 +30,17 @@ def print_list(lst) -> None:
             print(f"- {var}")
 
 
+def _print_info(func, args, kwargs, result, elapsed_time) -> None:
+    """Helper method to print function information."""
+    print(f"Function {func.__name__}")
+
+    print_args(*args)
+    print_kwargs(**kwargs)
+
+    print(f"Time: {elapsed_time:.4f}s")
+    print(f"Return Value: {result}")
+
+
 def print_func_time(func: Callable) -> Callable:
     """Decorator to measure and print the execution time of a function."""
     @wraps(func)
@@ -44,24 +55,8 @@ def print_func_time(func: Callable) -> Callable:
 
 class PrintFuncInfo():
     """A class that provides a decorator to print the execution time of a function."""
-    def __init__(
-        self,
-        show_args: bool = False,
-        show_kwargs: bool = False,
-        show_time: bool = False,
-        show_return: bool = False,
-    ):
-        """
-        Args:
-        - show_args: Whether to print the function arguments.
-        - show_kwargs: Whether to print the function keyword arguments.
-        - show_time: Whether to print the execution time of the function.
-        - show_return: Whether to print the return value of the function.
-        """
-        self.show_args = show_args
-        self.show_kwargs = show_kwargs
-        self.show_time = show_time
-        self.show_return = show_return
+    def __init__(self):
+        pass
 
     def __call__(self, func: Callable) -> Callable:
         """A decorator that prints the execution time of a function"""
@@ -70,15 +65,15 @@ class PrintFuncInfo():
             async def async_inner():
                 start_time = time()
                 result = await func(*args, **kwargs)
-                end_time = time()
-                self._print_info(func, args, kwargs, result, end_time - start_time)
+                elapsed_time = time() - start_time
+                _print_info(func, args, kwargs, result, elapsed_time)
                 return result
 
             def sync_inner():
                 start_time = time()
                 result = func(*args, **kwargs)
-                end_time = time()
-                self._print_info(func, args, kwargs, result, end_time - start_time)
+                elapsed_time = time() - start_time
+                _print_info(func, args, kwargs, result, elapsed_time)
                 return result
 
             if asyncio.iscoroutinefunction(func):
@@ -87,21 +82,8 @@ class PrintFuncInfo():
 
         return wrapper
 
-    def _print_info(self, func, args, kwargs, result, elapsed_time) -> None:
-        """Helper method to print function information."""
-        print(f"Function {func.__name__}")
-
-        if self.show_args:
-            print_args(*args)
-        if self.show_kwargs:
-            print_kwargs(**kwargs)
-        if self.show_time:
-            print(f"Time: {elapsed_time:.4f}s")
-        if self.show_return:
-            print(f"Return Value: {result}")
-
     @staticmethod
-    def print_all_info(func: Callable) -> Callable:
+    def print_all_func_info(func: Callable) -> Callable:
         """Decorator to print all function details."""
         @wraps(func)
         async def wrapper(*args, **kwargs):
@@ -119,7 +101,11 @@ class PrintFuncInfo():
         return wrapper
 
     @staticmethod
-    def print_each_args_and_kwargs(*args, **kwargs) -> None:
-        """Prints each argument and keyword argument"""
-        print_args(*args)
-        print_kwargs(**kwargs)
+    def print_each_args_and_kwargs(func: Callable) -> Callable:
+        """Decorator to print each argument and keyword argument of a function"""
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            await print_args(*args)
+            await print_kwargs(**kwargs)
+            return await func(*args, **kwargs)
+        return wrapper
